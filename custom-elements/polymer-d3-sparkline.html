@@ -9,28 +9,27 @@
 body { font-family: 'Helvetica', sans-serif; }
 </style>
 
-<body ng-app>
+<body ng-app = "demoApp">
 <div ng-controller="StockCtrl">
   <form class='well'>
     <label><b>Select  stock :</b></label>
-  	<select id = 'stockselect' class='form-control' ng-model="stock" 
-      ng-options="ticker for ticker in controls.stocks">   
+  	<select class='form-control' ng-model="stockSelected" 
+      ng-options="stock.ticker for stock in controls.stocks">   
   	</select><br>
   </form>
+  
+  Here's an example of a D3.js+Polymer sparkline component <stock-sparkline symbol='{{ stockSelected.ticker }}'></stock-sparkline> inline with text.
+
 </div>
-Here's an example of a D3.js+Polymer sparkline component <stock-sparkline symbol={{}}></stock-sparkline> inline with text.
 
 <script>
-  function StockCtrl($scope){
-    $scope.controls = {
-      stocks : ['AAPL','GOOG','MSFT']
-    }
-    
-    $scope.watch('selected',function(){
-      debugger;
-    })
+angular.module('demoApp', []).controller('StockCtrl', function($scope) {
+  $scope.controls = {
+    stocks : [{ticker:'AAPL',value:1},{ticker:'GOOG',value:2},{ticker:'MSFT',value:3}]
   }
   
+  $scope.stockSelected = $scope.controls.stocks[0]
+})
   
 </script>
 
@@ -69,8 +68,12 @@ Here's an example of a D3.js+Polymer sparkline component <stock-sparkline symbol
       var x = d3.scale.linear().range([0, width]);
       var y = d3.scale.linear().range([height, 0]);
       var line = d3.svg.line()
-                 .x(function(d) { return x(d.date); })
-                 .y(function(d) { return y(d.close); });
+                 .x(function(d) { 
+                    return x(d.date);
+                  })
+                 .y(function(d) {
+                   return y(d.close); 
+                 });
       data.forEach(function(d) {
         d.date = d3.time.format("%Y-%m-%d").parse(d.Date);
         d.close = +d.Close;
@@ -78,10 +81,15 @@ Here's an example of a D3.js+Polymer sparkline component <stock-sparkline symbol
       x.domain(d3.extent(data, function(d) { return d.date; }));
       y.domain(d3.extent(data, function(d) { return d.close; }));
 
+      svg.selectAll('path').transition(750).style("stroke-opacity",0).remove()
+      //svg.selectAll('path').transition().delay(1000).remove()
+      
       svg.append('path')
         .datum(data)
         .attr('class', 'line')
         .attr('d', line);
+      
+      svg.selectAll('circle').remove()
       svg.append('circle')
         .attr('class', 'last')
         .attr('cy', y(data[0].close))
@@ -96,6 +104,14 @@ Here's an example of a D3.js+Polymer sparkline component <stock-sparkline symbol
       ready: function() {
         var that = this;
         fetchStockHistory(this.symbol, this.months, function (data) {
+          console.log(data);
+          that.lastClose = +data[0].Close;
+          sparkline(that.$.sparkline, data);
+        });
+      },
+      symbolChanged: function(oldValue, newValue) {
+        var that = this;
+        fetchStockHistory(newValue, this.months, function (data) {
           console.log(data);
           that.lastClose = +data[0].Close;
           sparkline(that.$.sparkline, data);

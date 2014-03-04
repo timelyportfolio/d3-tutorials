@@ -2,14 +2,37 @@
 <meta charset="utf-8">
 <script src="http://cdnjs.cloudflare.com/ajax/libs/polymer/0.1.4/platform.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/polymer/0.1.4/polymer.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
 <script src="http://d3js.org/d3.v3.js"></script>
 <script src="stock-history.js"></script>
 <style>
 body { font-family: 'Helvetica', sans-serif; }
 </style>
 
-<body ng-app="d3Tutorial">
-Here's an example of a D3.js+Polymer sparkline component <stock-sparkline symbol="MSFT"></stock-sparkline> inline with text.
+<body ng-app>
+<div ng-controller="StockCtrl">
+  <form class='well'>
+    <label><b>Select  stock :</b></label>
+  	<select id = 'stockselect' class='form-control' ng-model="stock" 
+      ng-options="ticker for ticker in controls.stocks">   
+  	</select><br>
+  </form>
+</div>
+Here's an example of a D3.js+Polymer sparkline component <stock-sparkline symbol={{}}></stock-sparkline> inline with text.
+
+<script>
+  function StockCtrl($scope){
+    $scope.controls = {
+      stocks : ['AAPL','GOOG','MSFT']
+    }
+    
+    $scope.watch('selected',function(){
+      debugger;
+    })
+  }
+  
+  
+</script>
 
 <polymer-element name="stock-sparkline" attributes="symbol">
   <style>

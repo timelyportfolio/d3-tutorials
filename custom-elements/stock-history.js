@@ -1,4 +1,4 @@
-function formatDate(d) { return d.getUTCFullYear() + "-" + d.getMonth() + "-" + d.getDate(); }
+function formatDate(d) { return d3.time.format("%Y-%m-%d")(d); }
       
 function fetchStockHistory(symbol, months, callback) {
   var url = 'http://query.yahooapis.com/v1/public/yql';

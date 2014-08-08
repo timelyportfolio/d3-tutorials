@@ -47,15 +47,6 @@ angular.module('demoApp', []).controller('StockCtrl', function($scope) {
       vertical-align: middle;
     }
 
-    .line {
-      fill: none;
-      stroke: #000;
-      stroke-width: 0.5px;
-    }
-
-    .last {
-      fill: red;
-    }
   </style>
   <template>
     <span class="inline-sparkline">
@@ -90,14 +81,18 @@ angular.module('demoApp', []).controller('StockCtrl', function($scope) {
       svg.append('path')
         .datum(data)
         .attr('class', 'line')
-        .attr('d', line);
+        .attr('d', line)
+        .style("fill","none")
+        .style("stroke","#000")
+        .style("stroke-width","0.5px");
       
       svg.selectAll('circle').remove()
       svg.append('circle')
         .attr('class', 'last')
         .attr('cy', y(data[0].close))
         .attr('cx', width)
-        .attr('r', 2);
+        .attr('r', 2)
+        .style("fill","red");
     }
 
     Polymer('stock-sparkline', {
